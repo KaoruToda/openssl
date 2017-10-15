@@ -737,7 +737,6 @@ int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
 
     u32 *rk;
     int i, j, status;
-    u32 temp;
 
     /* first, start with an encryption schedule */
     status = AES_set_encrypt_key(userKey, bits, key);
@@ -748,6 +747,7 @@ int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
 
     /* invert the order of the round keys: */
     for (i = 0, j = 4*(key->rounds); i < j; i += 4, j -= 4) {
+        u32 temp;
         temp = rk[i    ]; rk[i    ] = rk[j    ]; rk[j    ] = temp;
         temp = rk[i + 1]; rk[i + 1] = rk[j + 1]; rk[j + 1] = temp;
         temp = rk[i + 2]; rk[i + 2] = rk[j + 2]; rk[j + 2] = temp;
@@ -1315,7 +1315,6 @@ int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
 
     u32 *rk;
     int i, j, status;
-    u32 temp;
 
     /* first, start with an encryption schedule */
     status = AES_set_encrypt_key(userKey, bits, key);
@@ -1326,6 +1325,7 @@ int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
 
     /* invert the order of the round keys: */
     for (i = 0, j = 4*(key->rounds); i < j; i += 4, j -= 4) {
+        u32 temp;
         temp = rk[i    ]; rk[i    ] = rk[j    ]; rk[j    ] = temp;
         temp = rk[i + 1]; rk[i + 1] = rk[j + 1]; rk[j + 1] = temp;
         temp = rk[i + 2]; rk[i + 2] = rk[j + 2]; rk[j + 2] = temp;
