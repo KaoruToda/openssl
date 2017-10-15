@@ -127,15 +127,13 @@ typedef struct _SocketPairTimeoutBlock {
 int main (int argc, char *argv[], char *envp[])
 {
     char TermBuff[80];
-    int TermSock,
-        status,
-        len;
 
     LogMessage ("Enter 'q' or 'Q' to quit ...");
     while (strcasecmp (TermBuff, "Q")) {
         /*
         ** Create the terminal socket
         */
+        int TermSock, status, len;
         status = TerminalSocket (TERM_SOCK_CREATE, &TermSock);
         if (status != TERM_SOCK_SUCCESS)
             exit (1);

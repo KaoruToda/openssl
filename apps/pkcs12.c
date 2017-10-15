@@ -875,10 +875,9 @@ int cert_load(BIO *in, STACK_OF(X509) *sk)
 int print_attribs(BIO *out, const STACK_OF(X509_ATTRIBUTE) *attrlst,
                   const char *name)
 {
-    X509_ATTRIBUTE *attr;
     ASN1_TYPE *av;
     char *value;
-    int i, attr_nid;
+    int i;
     if (!attrlst) {
         BIO_printf(out, "%s: <No Attributes>\n", name);
         return 1;
@@ -889,6 +888,8 @@ int print_attribs(BIO *out, const STACK_OF(X509_ATTRIBUTE) *attrlst,
     }
     BIO_printf(out, "%s\n", name);
     for (i = 0; i < sk_X509_ATTRIBUTE_num(attrlst); i++) {
+        int attr_nid;
+        X509_ATTRIBUTE *attr;
         ASN1_OBJECT *attr_obj;
         attr = sk_X509_ATTRIBUTE_value(attrlst, i);
         attr_obj = X509_ATTRIBUTE_get0_object(attr);

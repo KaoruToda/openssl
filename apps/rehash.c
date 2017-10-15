@@ -172,12 +172,11 @@ static int handle_symlink(const char *filename, const char *fullpath)
 {
     unsigned int hash = 0;
     int i, type, id;
-    unsigned char ch;
     char linktarget[PATH_MAX], *endptr;
     ossl_ssize_t n;
 
     for (i = 0; i < 8; i++) {
-        ch = filename[i];
+        unsigned char ch = filename[i];
         if (!isxdigit(ch))
             return -1;
         hash <<= 4;
@@ -324,7 +323,7 @@ static int do_dir(const char *dirname, enum Hash h)
     size_t i;
     const char *pathsep;
     const char *filename;
-    char *buf, *copy;
+    char *buf;
     STACK_OF(OPENSSL_STRING) *files = NULL;
 
     if (app_access(dirname, W_OK) < 0) {
@@ -344,6 +343,7 @@ static int do_dir(const char *dirname, enum Hash h)
         exit(1);
     }
     while ((filename = OPENSSL_DIR_read(&d, dirname)) != NULL) {
+        char *copy;
         if ((copy = strdup(filename)) == NULL
                 || !massage_filename(copy)
                 || sk_OPENSSL_STRING_push(files, copy) == 0) {

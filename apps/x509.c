@@ -692,11 +692,10 @@ int x509_main(int argc, char **argv)
             }
 #endif
             else if (pprint == i) {
-                X509_PURPOSE *ptmp;
                 int j;
                 BIO_printf(out, "Certificate purposes:\n");
                 for (j = 0; j < X509_PURPOSE_get_count(); j++) {
-                    ptmp = X509_PURPOSE_get0(j);
+                    X509_PURPOSE *ptmp = X509_PURPOSE_get0(j);
                     purpose_print(out, x, ptmp);
                 }
             } else if (modulus == i) {
@@ -1025,7 +1024,6 @@ static int x509_certify(X509_STORE *ctx, const char *CAfile, const EVP_MD *diges
 static int callb(int ok, X509_STORE_CTX *ctx)
 {
     int err;
-    X509 *err_cert;
 
     /*
      * it is ok to use a self signed certificate This case will catch both
@@ -1045,7 +1043,7 @@ static int callb(int ok, X509_STORE_CTX *ctx)
                    "error with certificate to be certified - should be self signed\n");
         return 0;
     } else {
-        err_cert = X509_STORE_CTX_get_current_cert(ctx);
+        X509 *err_cert = X509_STORE_CTX_get_current_cert(ctx);
         print_name(bio_err, NULL, X509_get_subject_name(err_cert), 0);
         BIO_printf(bio_err,
                    "error with certificate - error %d at depth %d\n%s\n", err,
@@ -1089,12 +1087,12 @@ static int sign(X509 *x, EVP_PKEY *pkey, int days, int clrext,
 
 static int purpose_print(BIO *bio, X509 *cert, X509_PURPOSE *pt)
 {
-    int id, i, idret;
+    int id, i;
     const char *pname;
     id = X509_PURPOSE_get_id(pt);
     pname = X509_PURPOSE_get0_name(pt);
     for (i = 0; i < 2; i++) {
-        idret = X509_check_purpose(cert, id, i);
+        int idret = X509_check_purpose(cert, id, i);
         BIO_printf(bio, "%s%s : ", pname, i ? " CA" : "");
         if (idret == 1)
             BIO_printf(bio, "Yes\n");

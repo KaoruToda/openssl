@@ -66,7 +66,6 @@ int app_init(long mesgwin);
 
 int chopup_args(ARGS *arg, char *buf)
 {
-    int quoted;
     char c = '\0', *p = NULL;
 
     arg->argc = 0;
@@ -76,6 +75,7 @@ int chopup_args(ARGS *arg, char *buf)
     }
 
     for (p = buf;;) {
+        int quoted;
         /* Skip whitespace. */
         while (*p && isspace(_UC(*p)))
             p++;
@@ -514,7 +514,6 @@ int add_oid_section(CONF *conf)
 {
     char *p;
     STACK_OF(CONF_VALUE) *sktmp;
-    CONF_VALUE *cnf;
     int i;
 
     if ((p = NCONF_get_string(conf, NULL, "oid_section")) == NULL) {
@@ -526,6 +525,7 @@ int add_oid_section(CONF *conf)
         return 0;
     }
     for (i = 0; i < sk_CONF_VALUE_num(sktmp); i++) {
+        CONF_VALUE *cnf;
         cnf = sk_CONF_VALUE_value(sktmp, i);
         if (OBJ_create(cnf->value, cnf->name, cnf->name) == NID_undef) {
             BIO_printf(bio_err, "problem creating object %s=%s\n",
@@ -1107,12 +1107,12 @@ static int set_multi_opts(unsigned long *flags, const char *arg,
                           const NAME_EX_TBL * in_tbl)
 {
     STACK_OF(CONF_VALUE) *vals;
-    CONF_VALUE *val;
     int i, ret = 1;
     if (!arg)
         return 0;
     vals = X509V3_parse_list(arg);
     for (i = 0; i < sk_CONF_VALUE_num(vals); i++) {
+        CONF_VALUE *val;
         val = sk_CONF_VALUE_value(vals, i);
         if (!set_table_opts(flags, val->name, in_tbl))
             ret = 0;
@@ -1154,7 +1154,6 @@ static int set_table_opts(unsigned long *flags, const char *arg,
 void print_name(BIO *out, const char *title, X509_NAME *nm,
                 unsigned long lflags)
 {
-    char *buf;
     char mline = 0;
     int indent = 0;
 
@@ -1165,6 +1164,7 @@ void print_name(BIO *out, const char *title, X509_NAME *nm,
         indent = 4;
     }
     if (lflags == XN_FLAG_COMPAT) {
+        char *buf;
         buf = X509_NAME_oneline(nm, 0, 0);
         BIO_puts(out, buf);
         BIO_puts(out, "\n");
@@ -1871,13 +1871,12 @@ int pkey_ctrl_string(EVP_PKEY_CTX *ctx, const char *value)
 
 static void nodes_print(const char *name, STACK_OF(X509_POLICY_NODE) *nodes)
 {
-    X509_POLICY_NODE *node;
-    int i;
-
     BIO_printf(bio_err, "%s Policies:", name);
     if (nodes) {
+        int i;
         BIO_puts(bio_err, "\n");
         for (i = 0; i < sk_X509_POLICY_NODE_num(nodes); i++) {
+            X509_POLICY_NODE *node;
             node = sk_X509_POLICY_NODE_value(nodes, i);
             X509_POLICY_NODE_print(bio_err, node, 2);
         }
@@ -1967,13 +1966,13 @@ void print_cert_checks(BIO *bio, X509 *x,
 static const char *get_dp_url(DIST_POINT *dp)
 {
     GENERAL_NAMES *gens;
-    GENERAL_NAME *gen;
     int i, gtype;
-    ASN1_STRING *uri;
     if (!dp->distpoint || dp->distpoint->type != 0)
         return NULL;
     gens = dp->distpoint->name.fullname;
     for (i = 0; i < sk_GENERAL_NAME_num(gens); i++) {
+        GENERAL_NAME *gen;
+        ASN1_STRING *uri;
         gen = sk_GENERAL_NAME_value(gens, i);
         uri = GENERAL_NAME_get0_value(gen, &gtype);
         if (gtype == GEN_URI && ASN1_STRING_length(uri) > 6) {
@@ -1993,8 +1992,8 @@ static const char *get_dp_url(DIST_POINT *dp)
 static X509_CRL *load_crl_crldp(STACK_OF(DIST_POINT) *crldp)
 {
     int i;
-    const char *urlptr = NULL;
     for (i = 0; i < sk_DIST_POINT_num(crldp); i++) {
+        const char *urlptr = NULL;
         DIST_POINT *dp = sk_DIST_POINT_value(crldp, i);
         urlptr = get_dp_url(dp);
         if (urlptr)

@@ -298,9 +298,9 @@ static void list_md_fn(const EVP_MD *m,
 static void list_missing_help(void)
 {
     const FUNCTION *fp;
-    const OPTIONS *o;
 
     for (fp = functions; fp->name != NULL; fp++) {
+        const OPTIONS *o;
         if ((o = fp->help) != NULL) {
             /* If there is help, list what flags are not documented. */
             for ( ; o->name != NULL; o++) {
@@ -450,7 +450,7 @@ const OPTIONS help_options[] = {
 int help_main(int argc, char **argv)
 {
     FUNCTION *fp;
-    int i, nl;
+    int i;
     FUNC_TYPE tp;
     char *prog;
     HELP_CHOICE o;
@@ -479,7 +479,7 @@ int help_main(int argc, char **argv)
     i = 0;
     tp = FT_none;
     for (fp = functions; fp->name != NULL; fp++) {
-        nl = 0;
+        int nl = 0;
         if (i++ % dc.columns == 0) {
             BIO_printf(bio_err, "\n");
             nl = 1;
@@ -592,7 +592,7 @@ static void list_pkey(void)
         } else {
             BIO_printf(bio_out, "Name: %s\n", pinfo);
             BIO_printf(bio_out, "\tType: %s Algorithm\n",
-                       pkey_flags & ASN1_PKEY_DYNAMIC ?
+                       (pkey_flags & ASN1_PKEY_DYNAMIC) ?
                        "External" : "Builtin");
             BIO_printf(bio_out, "\tOID: %s\n", OBJ_nid2ln(pkey_id));
             if (pem_str == NULL)
@@ -615,7 +615,7 @@ static void list_pkey_meth(void)
         EVP_PKEY_meth_get0_info(&pkey_id, &pkey_flags, pmeth);
         BIO_printf(bio_out, "%s\n", OBJ_nid2ln(pkey_id));
         BIO_printf(bio_out, "\tType: %s Algorithm\n",
-                   pkey_flags & ASN1_PKEY_DYNAMIC ?  "External" : "Builtin");
+                   (pkey_flags & ASN1_PKEY_DYNAMIC) ?  "External" : "Builtin");
     }
 }
 

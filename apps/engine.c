@@ -233,14 +233,14 @@ static int util_verbose(ENGINE *e, int verbose, BIO *out, const char *indent)
 static void util_do_cmds(ENGINE *e, STACK_OF(OPENSSL_STRING) *cmds,
                          BIO *out, const char *indent)
 {
-    int loop, res, num = sk_OPENSSL_STRING_num(cmds);
+    int loop, num = sk_OPENSSL_STRING_num(cmds);
 
     if (num < 0) {
         BIO_printf(out, "[Error]: internal stack error\n");
         return;
     }
     for (loop = 0; loop < num; loop++) {
-        char buf[256];
+	int res;
         const char *cmd, *arg;
         cmd = sk_OPENSSL_STRING_value(cmds, loop);
         res = 1;                /* assume success */
@@ -249,6 +249,7 @@ static void util_do_cmds(ENGINE *e, STACK_OF(OPENSSL_STRING) *cmds,
             if (!ENGINE_ctrl_cmd_string(e, cmd, NULL, 0))
                 res = 0;
         } else {
+            char buf[256];
             if ((int)(arg - cmd) > 254) {
                 BIO_printf(out, "[Error]: command name too long\n");
                 return;

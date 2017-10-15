@@ -35,10 +35,10 @@ void app_RAND_load_conf(CONF *c, const char *section)
 static int loadfiles(char *name)
 {
     char *p;
-    int last, ret = 1;
+    int ret = 1;
 
     for ( ; ; ) {
-        last = 0;
+        int last = 0;
         for (p = name; *p != '\0' && *p != LIST_SEPARATOR_CHAR; p++)
             continue;
         if (*p == '\0')

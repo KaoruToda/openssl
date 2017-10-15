@@ -124,7 +124,7 @@ char *opt_init(int ac, char **av, const OPTIONS *o)
     for (; o->name; ++o) {
 #ifndef NDEBUG
         const OPTIONS *next;
-        int duplicated, i;
+        int i;
 #endif
 
         if (o->name == OPT_HELP_STR || o->name == OPT_MORE_STR)
@@ -149,7 +149,7 @@ char *opt_init(int ac, char **av, const OPTIONS *o)
             /*
              * Some compilers inline strcmp and the assert string is too long.
              */
-            duplicated = strcmp(o->name, next->name) == 0;
+            int duplicated = strcmp(o->name, next->name) == 0;
             assert(!duplicated);
         }
 #endif
@@ -845,7 +845,6 @@ void opt_help(const OPTIONS *list)
     int width = 5;
     char start[80 + 1];
     char *p;
-    const char *help;
 
     /* Starts with its own help message? */
     standard_prolog = list[0].name != OPT_HELP_STR;
@@ -868,6 +867,7 @@ void opt_help(const OPTIONS *list)
 
     /* Now let's print. */
     for (o = list; o->name; o++) {
+        const char *help;
         help = o->helpstr ? o->helpstr : "(No additional info)";
         if (o->name == OPT_HELP_STR) {
             BIO_printf(bio_err, help, prog);

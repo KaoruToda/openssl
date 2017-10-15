@@ -791,7 +791,7 @@ static void print_chain_flags(SSL *s, int flags)
                    (flags & pp->retval) ? "OK" : "NOT OK");
     BIO_printf(bio_err, "\tSuite B: ");
     if (SSL_set_cert_flags(s, 0) & SSL_CERT_FLAG_SUITEB_128_LOS)
-        BIO_puts(bio_err, flags & CERT_PKEY_SUITEB ? "OK\n" : "NOT OK\n");
+        BIO_puts(bio_err, (flags & CERT_PKEY_SUITEB) ? "OK\n" : "NOT OK\n");
     else
         BIO_printf(bio_err, "not tested\n");
 }
@@ -802,7 +802,7 @@ static void print_chain_flags(SSL *s, int flags)
  */
 static int set_cert_cb(SSL *ssl, void *arg)
 {
-    int i, rv;
+    int i;
     SSL_EXCERT *exc = arg;
 #ifdef CERT_CB_TEST_RETRY
     static int retry_cnt;
@@ -830,7 +830,7 @@ static int set_cert_cb(SSL *ssl, void *arg)
 
     while (exc != NULL) {
         i++;
-        rv = SSL_check_chain(ssl, exc->cert, exc->key, exc->chain);
+        int rv = SSL_check_chain(ssl, exc->cert, exc->key, exc->chain);
         BIO_printf(bio_err, "Checking cert chain %d:\nSubject: ", i);
         X509_NAME_print_ex(bio_err, X509_get_subject_name(exc->cert), 0,
                            get_nameopt());
@@ -886,11 +886,10 @@ static int ssl_excert_prepend(SSL_EXCERT **pexc)
 
 void ssl_excert_free(SSL_EXCERT *exc)
 {
-    SSL_EXCERT *curr;
-
     if (exc == NULL)
         return;
     while (exc) {
+        SSL_EXCERT *curr;
         X509_free(exc->cert);
         EVP_PKEY_free(exc->key);
         sk_X509_pop_free(exc->chain, X509_free);
@@ -1175,10 +1174,9 @@ int config_ctx(SSL_CONF_CTX *cctx, STACK_OF(OPENSSL_STRING) *str,
 
 static int add_crls_store(X509_STORE *st, STACK_OF(X509_CRL) *crls)
 {
-    X509_CRL *crl;
     int i;
     for (i = 0; i < sk_X509_CRL_num(crls); i++) {
-        crl = sk_X509_CRL_value(crls, i);
+        X509_CRL *crl = sk_X509_CRL_value(crls, i);
         X509_STORE_add_crl(st, crl);
     }
     return 1;

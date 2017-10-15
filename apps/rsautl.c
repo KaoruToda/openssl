@@ -225,9 +225,8 @@ int rsautl_main(int argc, char **argv)
     }
     if (rev) {
         int i;
-        unsigned char ctmp;
         for (i = 0; i < rsa_inlen / 2; i++) {
-            ctmp = rsa_in[i];
+            unsigned char ctmp = rsa_in[i];
             rsa_in[i] = rsa_in[rsa_inlen - 1 - i];
             rsa_in[rsa_inlen - 1 - i] = ctmp;
         }

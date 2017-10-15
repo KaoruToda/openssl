@@ -3065,7 +3065,6 @@ static void print_stuff(BIO *bio, SSL *s, int full)
 #ifndef OPENSSL_NO_COMP
     const COMP_METHOD *comp, *expansion;
 #endif
-    unsigned char *exportedkeymat;
 #ifndef OPENSSL_NO_CT
     const SSL_CTX *ctx = SSL_get_SSL_CTX(s);
 #endif
@@ -3237,6 +3236,7 @@ static void print_stuff(BIO *bio, SSL *s, int full)
 
     SSL_SESSION_print(bio, SSL_get_session(s));
     if (SSL_get_session(s) != NULL && keymatexportlabel != NULL) {
+        unsigned char *exportedkeymat;
         BIO_printf(bio, "Keying material exporter:\n");
         BIO_printf(bio, "    Label: '%s'\n", keymatexportlabel);
         BIO_printf(bio, "    Length: %i bytes\n", keymatexportlen);

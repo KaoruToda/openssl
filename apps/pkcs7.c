@@ -143,10 +143,8 @@ int pkcs7_main(int argc, char **argv)
         }
 
         if (certs != NULL) {
-            X509 *x;
-
             for (i = 0; i < sk_X509_num(certs); i++) {
-                x = sk_X509_value(certs, i);
+                X509 *x = sk_X509_value(certs, i);
                 if (text)
                     X509_print(out, x);
                 else
@@ -158,10 +156,8 @@ int pkcs7_main(int argc, char **argv)
             }
         }
         if (crls != NULL) {
-            X509_CRL *crl;
-
             for (i = 0; i < sk_X509_CRL_num(crls); i++) {
-                crl = sk_X509_CRL_value(crls, i);
+                X509_CRL *crl = sk_X509_CRL_value(crls, i);
 
                 X509_CRL_print_ex(out, crl, get_nameopt());
 

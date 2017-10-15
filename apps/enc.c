@@ -604,7 +604,6 @@ static void show_ciphers(const OBJ_NAME *name, void *arg)
 static int set_hex(const char *in, unsigned char *out, int size)
 {
     int i, n;
-    unsigned char j;
 
     i = size * 2;
     n = strlen(in);
@@ -617,6 +616,7 @@ static int set_hex(const char *in, unsigned char *out, int size)
 
     memset(out, 0, size);
     for (i = 0; i < n; i++) {
+        unsigned char j;
         j = (unsigned char)*in++;
         if (!isxdigit(j)) {
             BIO_printf(bio_err, "non-hex digit\n");

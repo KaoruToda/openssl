@@ -884,12 +884,12 @@ static int EVP_Update_loop_ccm(void *args)
     unsigned char *buf = tempargs->buf;
     EVP_CIPHER_CTX *ctx = tempargs->ctx;
     int outl, count;
-    unsigned char tag[12];
 #ifndef SIGALRM
     int nb_iter = save_count * 4 * lengths[0] / lengths[testnum];
 #endif
     if (decrypt) {
         for (count = 0; COND(nb_iter); count++) {
+            unsigned char tag[12];
             EVP_DecryptInit_ex(ctx, NULL, NULL, NULL, iv);
             EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, sizeof(tag), tag);
             EVP_DecryptUpdate(ctx, NULL, &outl, NULL, lengths[testnum]);
@@ -935,9 +935,9 @@ static int RSA_sign_loop(void *args)
     unsigned char *buf2 = tempargs->buf2;
     unsigned int *rsa_num = &tempargs->siglen;
     RSA **rsa_key = tempargs->rsa_key;
-    int ret, count;
+    int count;
     for (count = 0; COND(rsa_c[testnum][0]); count++) {
-        ret = RSA_sign(NID_md5_sha1, buf, 36, buf2, rsa_num, rsa_key[testnum]);
+        int ret = RSA_sign(NID_md5_sha1, buf, 36, buf2, rsa_num, rsa_key[testnum]);
         if (ret == 0) {
             BIO_printf(bio_err, "RSA sign failure\n");
             ERR_print_errors(bio_err);
@@ -955,9 +955,9 @@ static int RSA_verify_loop(void *args)
     unsigned char *buf2 = tempargs->buf2;
     unsigned int rsa_num = tempargs->siglen;
     RSA **rsa_key = tempargs->rsa_key;
-    int ret, count;
+    int count;
     for (count = 0; COND(rsa_c[testnum][1]); count++) {
-        ret =
+        int ret =
             RSA_verify(NID_md5_sha1, buf, 36, buf2, rsa_num, rsa_key[testnum]);
         if (ret <= 0) {
             BIO_printf(bio_err, "RSA verify failure\n");
@@ -979,9 +979,9 @@ static int DSA_sign_loop(void *args)
     unsigned char *buf2 = tempargs->buf2;
     DSA **dsa_key = tempargs->dsa_key;
     unsigned int *siglen = &tempargs->siglen;
-    int ret, count;
+    int count;
     for (count = 0; COND(dsa_c[testnum][0]); count++) {
-        ret = DSA_sign(0, buf, 20, buf2, siglen, dsa_key[testnum]);
+        int ret = DSA_sign(0, buf, 20, buf2, siglen, dsa_key[testnum]);
         if (ret == 0) {
             BIO_printf(bio_err, "DSA sign failure\n");
             ERR_print_errors(bio_err);
@@ -999,9 +999,9 @@ static int DSA_verify_loop(void *args)
     unsigned char *buf2 = tempargs->buf2;
     DSA **dsa_key = tempargs->dsa_key;
     unsigned int siglen = tempargs->siglen;
-    int ret, count;
+    int count;
     for (count = 0; COND(dsa_c[testnum][1]); count++) {
-        ret = DSA_verify(0, buf, 20, buf2, siglen, dsa_key[testnum]);
+        int ret = DSA_verify(0, buf, 20, buf2, siglen, dsa_key[testnum]);
         if (ret <= 0) {
             BIO_printf(bio_err, "DSA verify failure\n");
             ERR_print_errors(bio_err);
@@ -1022,9 +1022,9 @@ static int ECDSA_sign_loop(void *args)
     EC_KEY **ecdsa = tempargs->ecdsa;
     unsigned char *ecdsasig = tempargs->buf2;
     unsigned int *ecdsasiglen = &tempargs->siglen;
-    int ret, count;
+    int count;
     for (count = 0; COND(ecdsa_c[testnum][0]); count++) {
-        ret = ECDSA_sign(0, buf, 20, ecdsasig, ecdsasiglen, ecdsa[testnum]);
+        int ret = ECDSA_sign(0, buf, 20, ecdsasig, ecdsasiglen, ecdsa[testnum]);
         if (ret == 0) {
             BIO_printf(bio_err, "ECDSA sign failure\n");
             ERR_print_errors(bio_err);
@@ -1042,8 +1042,9 @@ static int ECDSA_verify_loop(void *args)
     EC_KEY **ecdsa = tempargs->ecdsa;
     unsigned char *ecdsasig = tempargs->buf2;
     unsigned int ecdsasiglen = tempargs->siglen;
-    int ret, count;
+    int count;
     for (count = 0; COND(ecdsa_c[testnum][1]); count++) {
+	int ret;
         ret = ECDSA_verify(0, buf, 20, ecdsasig, ecdsasiglen, ecdsa[testnum]);
         if (ret != 1) {
             BIO_printf(bio_err, "ECDSA verify failure\n");
@@ -2833,7 +2834,7 @@ int speed_main(int argc, char **argv)
             testnum = 0;
         }
         if (mr)
-            printf("+F2:%u:%u:%f:%f\n",
+            printf("+F2:%d:%u:%f:%f\n",
                    k, rsa_bits[k], rsa_results[k][0], rsa_results[k][1]);
         else
             printf("rsa %4u bits %8.6fs %8.6fs %8.1f %8.1f\n",
@@ -2851,7 +2852,7 @@ int speed_main(int argc, char **argv)
             testnum = 0;
         }
         if (mr)
-            printf("+F3:%u:%u:%f:%f\n",
+            printf("+F3:%d:%u:%f:%f\n",
                    k, dsa_bits[k], dsa_results[k][0], dsa_results[k][1]);
         else
             printf("dsa %4u bits %8.6fs %8.6fs %8.1f %8.1f\n",
@@ -2870,7 +2871,7 @@ int speed_main(int argc, char **argv)
         }
 
         if (mr)
-            printf("+F4:%u:%u:%f:%f\n",
+            printf("+F4:%d:%u:%f:%f\n",
                    k, test_curves_bits[k],
                    ecdsa_results[k][0], ecdsa_results[k][1]);
         else
@@ -2890,7 +2891,7 @@ int speed_main(int argc, char **argv)
             testnum = 0;
         }
         if (mr)
-            printf("+F5:%u:%u:%f:%f\n",
+            printf("+F5:%d:%u:%f:%f\n",
                    k, test_curves_bits[k],
                    ecdh_results[k][0], 1.0 / ecdh_results[k][0]);
 
@@ -3155,7 +3156,6 @@ static void multiblock_speed(const EVP_CIPHER *evp_cipher)
     const char *alg_name;
     unsigned char *inp, *out, no_key[32], no_iv[16];
     EVP_CIPHER_CTX *ctx;
-    double d = 0.0;
 
     inp = app_malloc(mblengths[num - 1], "multiblock input buffer");
     out = app_malloc(mblengths[num - 1] + 1024, "multiblock output buffer");
@@ -3165,6 +3165,7 @@ static void multiblock_speed(const EVP_CIPHER *evp_cipher)
     alg_name = OBJ_nid2ln(EVP_CIPHER_nid(evp_cipher));
 
     for (j = 0; j < num; j++) {
+        double d = 0.0;
         print_message(alg_name, 0, mblengths[j]);
         Time_F(START);
         for (count = 0, run = 1; run && count < 0x7fffffff; count++) {

@@ -277,10 +277,9 @@ int pkeyutl_main(int argc, char **argv)
         }
         if (rev) {
             size_t i;
-            unsigned char ctmp;
             size_t l = (size_t)buf_inlen;
             for (i = 0; i < l / 2; i++) {
-                ctmp = buf_in[i];
+                unsigned char ctmp = buf_in[i];
                 buf_in[i] = buf_in[l - 1 - i];
                 buf_in[l - 1 - i] = ctmp;
             }

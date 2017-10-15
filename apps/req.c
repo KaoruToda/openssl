@@ -1086,16 +1086,15 @@ static int auto_info(X509_REQ *req, STACK_OF(CONF_VALUE) *dn_sk,
                      STACK_OF(CONF_VALUE) *attr_sk, int attribs,
                      unsigned long chtype)
 {
-    int i, spec_char, plus_char;
-    char *p, *q;
-    char *type;
+    int i, spec_char;
     CONF_VALUE *v;
     X509_NAME *subj;
 
     subj = X509_REQ_get_subject_name(req);
 
     for (i = 0; i < sk_CONF_VALUE_num(dn_sk); i++) {
-        int mval;
+        int mval, plus_char;
+        char *type, *p, *q;
         v = sk_CONF_VALUE_value(dn_sk, i);
         p = q = NULL;
         type = v->name;
@@ -1328,7 +1327,6 @@ static EVP_PKEY_CTX *set_keygen_ctx(const char *gstr,
     EVP_PKEY_CTX *gctx = NULL;
     EVP_PKEY *param = NULL;
     long keylen = -1;
-    BIO *pbio = NULL;
     const char *paramfile = NULL;
 
     if (gstr == NULL) {
@@ -1379,7 +1377,7 @@ static EVP_PKEY_CTX *set_keygen_ctx(const char *gstr,
     }
 
     if (paramfile != NULL) {
-        pbio = BIO_new_file(paramfile, "r");
+        BIO *pbio = BIO_new_file(paramfile, "r");
         if (pbio == NULL) {
             BIO_printf(bio_err, "Can't open parameter file %s\n", paramfile);
             return NULL;

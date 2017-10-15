@@ -2202,22 +2202,21 @@ static int sv_body(int s, int stype, int prot, unsigned char *context)
             BIO_printf(bio_err, "Turned on non blocking io\n");
     }
 
-    if (con == NULL) {
-        con = SSL_new(ctx);
+    con = SSL_new(ctx);
 
-        if (s_tlsextdebug) {
-            SSL_set_tlsext_debug_callback(con, tlsext_cb);
-            SSL_set_tlsext_debug_arg(con, bio_s_out);
-        }
-
-        if (context
-            && !SSL_set_session_id_context(con,
-                                           context, strlen((char *)context))) {
-            BIO_printf(bio_err, "Error setting session id context\n");
-            ret = -1;
-            goto err;
-        }
+    if (s_tlsextdebug) {
+        SSL_set_tlsext_debug_callback(con, tlsext_cb);
+        SSL_set_tlsext_debug_arg(con, bio_s_out);
     }
+
+    if (context
+        && !SSL_set_session_id_context(con,
+                                       context, strlen((char *)context))) {
+        BIO_printf(bio_err, "Error setting session id context\n");
+        ret = -1;
+        goto err;
+    }
+
     if (!SSL_clear(con)) {
         BIO_printf(bio_err, "Error clearing SSL connection\n");
         ret = -1;
@@ -2681,7 +2680,6 @@ static int is_retryable(SSL *con, int i)
 static int init_ssl_connection(SSL *con)
 {
     int i;
-    long verify_err;
     int retry = 0;
 
 #ifndef OPENSSL_NO_DTLS
@@ -2757,6 +2755,8 @@ static int init_ssl_connection(SSL *con)
     } while (i < 0 && SSL_waiting_for_async(con));
 
     if (i <= 0) {
+        long verify_err;
+
         if ((dtlslisten && i == 0)
                 || (!dtlslisten && retry)) {
             BIO_printf(bio_s_out, "DELAY\n");
@@ -2788,8 +2788,6 @@ static void print_connection_info(SSL *con)
     const unsigned char *next_proto_neg;
     unsigned next_proto_neg_len;
 #endif
-    unsigned char *exportedkeymat;
-    int i;
 
     if (s_brief)
         print_ssl_summary(con);
@@ -2842,6 +2840,7 @@ static void print_connection_info(SSL *con)
         BIO_printf(bio_s_out, "Renegotiation is DISABLED\n");
 
     if (keymatexportlabel != NULL) {
+        unsigned char *exportedkeymat;
         BIO_printf(bio_s_out, "Keying material exporter:\n");
         BIO_printf(bio_s_out, "    Label: '%s'\n", keymatexportlabel);
         BIO_printf(bio_s_out, "    Length: %i bytes\n", keymatexportlen);
@@ -2853,6 +2852,7 @@ static void print_connection_info(SSL *con)
                                         NULL, 0, 0)) {
             BIO_printf(bio_s_out, "    Error\n");
         } else {
+            int i;
             BIO_printf(bio_s_out, "    Keying material: ");
             for (i = 0; i < keymatexportlen; i++)
                 BIO_printf(bio_s_out, "%02X", exportedkeymat[i]);
@@ -3550,11 +3550,11 @@ static void init_session_cache_ctx(SSL_CTX *sctx)
 
 static void free_sessions(void)
 {
-    simple_ssl_session *sess, *tsess;
+    simple_ssl_session *sess;
     for (sess = first; sess;) {
         OPENSSL_free(sess->id);
         OPENSSL_free(sess->der);
-        tsess = sess;
+        simple_ssl_session *tsess = sess;
         sess = sess->next;
         OPENSSL_free(tsess);
     }

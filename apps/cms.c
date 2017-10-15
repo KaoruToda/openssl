@@ -1162,14 +1162,15 @@ static void gnames_stack_print(STACK_OF(GENERAL_NAMES) *gns)
 static void receipt_request_print(CMS_ContentInfo *cms)
 {
     STACK_OF(CMS_SignerInfo) *sis;
-    CMS_SignerInfo *si;
     CMS_ReceiptRequest *rr;
     int allorfirst;
     STACK_OF(GENERAL_NAMES) *rto, *rlist;
     ASN1_STRING *scid;
-    int i, rv;
+    int i;
     sis = CMS_get0_SignerInfos(cms);
     for (i = 0; i < sk_CMS_SignerInfo_num(sis); i++) {
+        CMS_SignerInfo *si;
+        int rv;
         si = sk_CMS_SignerInfo_value(sis, i);
         rv = CMS_get1_ReceiptRequest(si, &rr);
         BIO_printf(bio_err, "Signer %d:\n", i + 1);
@@ -1266,11 +1267,11 @@ static CMS_ReceiptRequest *make_receipt_request(STACK_OF(OPENSSL_STRING)
 static int cms_set_pkey_param(EVP_PKEY_CTX *pctx,
                               STACK_OF(OPENSSL_STRING) *param)
 {
-    char *keyopt;
     int i;
     if (sk_OPENSSL_STRING_num(param) <= 0)
         return 1;
     for (i = 0; i < sk_OPENSSL_STRING_num(param); i++) {
+        char *keyopt;
         keyopt = sk_OPENSSL_STRING_value(param, i);
         if (pkey_ctrl_string(pctx, keyopt) <= 0) {
             BIO_printf(bio_err, "parameter error \"%s\"\n", keyopt);

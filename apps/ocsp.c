@@ -818,8 +818,6 @@ static void print_ocsp_summary(BIO *out, OCSP_BASICRESP *bs, OCSP_REQUEST *req,
                               STACK_OF(OCSP_CERTID) *ids, long nsec,
                               long maxage)
 {
-    OCSP_CERTID *id;
-    const char *name;
     int i, status, reason;
     ASN1_GENERALIZEDTIME *rev, *thisupd, *nextupd;
 
@@ -828,6 +826,8 @@ static void print_ocsp_summary(BIO *out, OCSP_BASICRESP *bs, OCSP_REQUEST *req,
         return;
 
     for (i = 0; i < sk_OCSP_CERTID_num(ids); i++) {
+        OCSP_CERTID *id;
+        const char *name;
         id = sk_OCSP_CERTID_value(ids, i);
         name = sk_OPENSSL_STRING_value(names, i);
         BIO_printf(out, "%s: ", name);
@@ -1075,8 +1075,7 @@ static int do_responder(OCSP_REQUEST **preq, BIO **pcbio, BIO *acbio)
     int len;
     OCSP_REQUEST *req = NULL;
     char inbuf[2048], reqbuf[2048];
-    char *p, *q;
-    BIO *cbio = NULL, *getbio = NULL, *b64 = NULL;
+    BIO *cbio = NULL, *getbio = NULL;
 
     if (BIO_do_accept(acbio) <= 0) {
         BIO_printf(bio_err, "Error accepting connection\n");
@@ -1093,6 +1092,8 @@ static int do_responder(OCSP_REQUEST **preq, BIO **pcbio, BIO *acbio)
         return 1;
     if (strncmp(reqbuf, "GET ", 4) == 0) {
         /* Expecting GET {sp} /URL {sp} HTTP/1.x */
+        char *p, *q;
+        BIO *b64 = NULL;
         for (p = reqbuf + 4; *p == ' '; ++p)
             continue;
         if (*p != '/') {
