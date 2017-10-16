@@ -334,17 +334,17 @@ static int dsa_do_verify(const unsigned char *dgst, int dgst_len,
     BN_free(u1);
     BN_free(u2);
     BN_free(t1);
-    return (ret);
+    return ret;
 }
 
 static int dsa_init(DSA *dsa)
 {
     dsa->flags |= DSA_FLAG_CACHE_MONT_P;
-    return (1);
+    return 1;
 }
 
 static int dsa_finish(DSA *dsa)
 {
     BN_MONT_CTX_free(dsa->method_mont_p);
-    return (1);
+    return 1;
 }

@@ -479,7 +479,7 @@ STACK_OF(X509_NAME) *SSL_dup_CA_list(const STACK_OF(X509_NAME) *sk)
         }
         sk_X509_NAME_push(ret, name);   /* Cannot fail after reserve call */
     }
-    return (ret);
+    return ret;
 }
 
 void SSL_set0_CA_list(SSL *s, STACK_OF(X509_NAME) *name_list)
@@ -570,7 +570,7 @@ int SSL_CTX_add_client_CA(SSL_CTX *ctx, X509 *x)
 
 static int xname_sk_cmp(const X509_NAME *const *a, const X509_NAME *const *b)
 {
-    return (X509_NAME_cmp(*a, *b));
+    return X509_NAME_cmp(*a, *b);
 }
 
 static int xname_cmp(const X509_NAME *a, const X509_NAME *b)
@@ -645,7 +645,7 @@ STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file)
     lh_X509_NAME_free(name_hash);
     if (ret != NULL)
         ERR_clear_error();
-    return (ret);
+    return ret;
 }
 
 /**
